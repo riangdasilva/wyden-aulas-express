@@ -1,10 +1,11 @@
 import { Request, Response } from "../type"
 import { Class } from "../models/classes"
+import classService from "../services/classes"
 
 export async function createClass(req: Request, res: Response) {
   try {
-    const created = await Class.create(req.body)
-    return res.status(201).json(created)
+    const result = await classService.createClass(req.body)
+    return res.status(result.status).json(result.data)
   } catch (err) {
     return res.status(500).json(err)
   }
@@ -33,13 +34,8 @@ export async function readClass(req: Request, res: Response) {
 
 export async function updateClass(req: Request, res: Response) {
   try {
-    const [rowsAffected] = await Class.update(req.body, {
-      where: { id: req.params.id },
-    })
-    if (!rowsAffected) {
-      return res.status(404).json({ message: "Class not found" })
-    }
-    return res.status(204).json()
+    const result = await classService.updateClass(req.params.id, req.body)
+    return res.status(result.status).json(result.data)
   } catch (err) {
     return res.status(500).json(err)
   }

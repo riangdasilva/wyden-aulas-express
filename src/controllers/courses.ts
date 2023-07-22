@@ -1,16 +1,12 @@
 import { Request, Response } from "../type"
 import { Course } from "../models/courses"
+import courseService from "../services/courses"
 
 export async function createCourse(req: Request, res: Response) {
   try {
-    const course = await Course.findOne({ where: { name: req.body.name } })
-    if (course) {
-      return res.status(409).json({ message: "Course already exists" })
-    }
-    const created = await Course.create(req.body)
-    return res.status(201).json(created)
+    const result = await courseService.createCourse(req.body)
+    return res.status(result.status).json(result.data)
   } catch (err) {
-    console.log(err)
     return res.status(500).json(err)
   }
 }
@@ -38,20 +34,8 @@ export async function readCourse(req: Request, res: Response) {
 
 export async function updateCourse(req: Request, res: Response) {
   try {
-    const existingCourse = await Course.findOne({
-      where: { name: req.body.name },
-    })
-    if (existingCourse) {
-      return res.status(409).json({ message: "Course already exists" })
-    }
-    const [rowsAffected] = await Course.update(req.body, {
-      where: { id: req.params.id },
-    })
-
-    if (!rowsAffected) {
-      return res.status(404).json({ message: "Course not found" })
-    }
-    return res.status(204).json()
+    const result = await courseService.updateCourse(req.params.id, req.body)
+    return res.status(result.status).json(result.data)
   } catch (err) {
     return res.status(500).json(err)
   }

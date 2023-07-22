@@ -1,10 +1,11 @@
 import { Request, Response } from "../type"
 import { Classroom } from "../models/classrooms"
+import classroomService from "../services/classrooms"
 
 export async function createClassroom(req: Request, res: Response) {
   try {
-    const created = await Classroom.create(req.body)
-    return res.status(201).json(created)
+    const result = await classroomService.createClassroom(req.body)
+    return res.status(result.status).json(result.data)
   } catch (err) {
     return res.status(500).json(err)
   }
@@ -33,13 +34,11 @@ export async function readClassroom(req: Request, res: Response) {
 
 export async function updateClassroom(req: Request, res: Response) {
   try {
-    const [rowsAffected] = await Classroom.update(req.body, {
-      where: { id: req.params.id },
-    })
-    if (!rowsAffected) {
-      return res.status(404).json({ message: "Classroom not found" })
-    }
-    return res.status(204).json()
+    const result = await classroomService.updateClassroom(
+      req.params.id,
+      req.body
+    )
+    return res.status(result.status).json(result.data)
   } catch (err) {
     return res.status(500).json(err)
   }
